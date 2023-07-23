@@ -6,8 +6,12 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private GameObject player;
+
+    [SerializeField] private BoxCollider2D playerCollider;
     [SerializeField] private SpriteRenderer middleGroundSpriteRenderer;
+
     [SerializeField] private SpriteRenderer groundSpriteRenderer;
+    [SerializeField] private PolygonCollider2D groundCollider;
     [SerializeField] private TextMeshProUGUI gemText;
     private int gemNumber;
     private Texture2D originalTexture;
@@ -18,9 +22,11 @@ public class PlayerController : MonoBehaviour
     private Texture2D groundTexture;
     private Texture2D middleGroundTexture;
 
-    private bool sarch;// ÉTÅ[É`íÜÇ©Ç«Ç§Ç©
+    [SerializeField] private GroundColliderManager groundColliderManager;
 
-    private void Start()
+    private bool sarch;// „Çµ„Éº„ÉÅ‰∏≠„Åã„Å©„ÅÜ„Åã
+
+    private void Awake()
     {
         originalTexture = groundSpriteRenderer.sprite.texture;
         initialPixels = originalTexture.GetPixels();
@@ -31,6 +37,11 @@ public class PlayerController : MonoBehaviour
         DigHole(middleGroundTexture, player.transform.position, 20);
         DigHole(groundTexture, player.transform.position, 30);
         gemNumber = 0;
+        groundColliderManager.UpdateGroundCollider();
+    }
+
+    private void Start()
+    {
     }
 
     private void Update()
@@ -39,42 +50,51 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.DownArrow))
             {
+                playerCollider.enabled = false;
                 transform.position += new Vector3(0, -1, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
+            }
+            if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                groundColliderManager.UpdateGroundCollider();
             }
             else if (Input.GetKey(KeyCode.UpArrow))
             {
                 transform.position += new Vector3(0, 1, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
+                groundColliderManager.UpdateGroundCollider();
             }
             else if (Input.GetKey(KeyCode.RightArrow))
             {
                 transform.position += new Vector3(1, 0, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
+                groundColliderManager.UpdateGroundCollider();
             }
             else if (Input.GetKey(KeyCode.LeftArrow))
             {
                 transform.position += new Vector3(-1, 0, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
+                groundColliderManager.UpdateGroundCollider();
             }
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                Debug.Log("é¿çs");
-                // ÉTÅ[É`
+                Debug.Log("ÂÆüË°å");
+                // „Çµ„Éº„ÉÅ
                 StartCoroutine(
                 SarchAround(player.transform.position, 200));
+                groundColliderManager.UpdateGroundCollider();
             }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("é¿çs");
+        Debug.Log("ÂÆüË°å");
         if (collision.gameObject.tag == "gem")
         {
             gemNumber++;
@@ -90,9 +110,9 @@ public class PlayerController : MonoBehaviour
         Color[] tmpMiddleGroundPixels = middleGroundTexture.GetPixels();
         //groundTexture
         //middleGroundTexture
-        // ÉeÉNÉXÉ`ÉÉç¿ïWÇ…ïœä∑
+        // „ÉÜ„ÇØ„Çπ„ÉÅ„É£Â∫ßÊ®ô„Å´Â§âÊèõ
         Vector2Int pixelPos = WorldToTextureCoord(position);
-        // åäÇÃîºåaÇ…Ç‡Ç«Ç¬Ç¢ÇƒÉeÉNÉXÉ`ÉÉÇëÄçÏ
+        // Á©¥„ÅÆÂçäÂæÑ„Å´„ÇÇ„Å©„Å§„ÅÑ„Å¶„ÉÜ„ÇØ„Çπ„ÉÅ„É£„ÇíÊìç‰Ωú
         for (int y = -radius; y <= radius; y++)
         {
             for (int x = -radius; x <= radius; x++)
@@ -101,7 +121,7 @@ public class PlayerController : MonoBehaviour
                 {
                     continue;
                 }
-                // ÉsÉNÉZÉãç¿ïWÇåvéZ
+                // „Éî„ÇØ„Çª„É´Â∫ßÊ®ô„ÇíË®àÁÆó
                 Vector2Int pixelOffset = new Vector2Int(x, y);
                 Vector2Int pixel = pixelPos + pixelOffset;
 
@@ -127,7 +147,7 @@ public class PlayerController : MonoBehaviour
                 {
                     continue;
                 }
-                // ÉsÉNÉZÉãç¿ïWÇåvéZ
+                // „Éî„ÇØ„Çª„É´Â∫ßÊ®ô„ÇíË®àÁÆó
                 Vector2Int pixelOffset = new Vector2Int(x, y);
                 Vector2Int pixel = pixelPos + pixelOffset;
 
@@ -154,11 +174,11 @@ public class PlayerController : MonoBehaviour
 
     private void DigHole(Texture2D texture, Vector2 position, int radius)
     {
-        // ÉeÉNÉXÉ`ÉÉç¿ïWÇ…ïœä∑
+        // „ÉÜ„ÇØ„Çπ„ÉÅ„É£Â∫ßÊ®ô„Å´Â§âÊèõ
         Vector2Int pixelPos = WorldToTextureCoord(position);
-        // åäÇÃîºåaÇ…Ç‡Ç«Ç¬Ç¢ÇƒÉeÉNÉXÉ`ÉÉÇëÄçÏ
+        // Á©¥„ÅÆÂçäÂæÑ„Å´„ÇÇ„Å©„Å§„ÅÑ„Å¶„ÉÜ„ÇØ„Çπ„ÉÅ„É£„ÇíÊìç‰Ωú
 
-        // åäÇÃîºåaÇ…Ç‡Ç«Ç¬Ç¢ÇƒÉeÉNÉXÉ`ÉÉÇëÄçÏ
+        // Á©¥„ÅÆÂçäÂæÑ„Å´„ÇÇ„Å©„Å§„ÅÑ„Å¶„ÉÜ„ÇØ„Çπ„ÉÅ„É£„ÇíÊìç‰Ωú
         for (int y = -radius; y <= radius; y++)
         {
             for (int x = -radius; x <= radius; x++)
@@ -167,7 +187,7 @@ public class PlayerController : MonoBehaviour
                 {
                     continue;
                 }
-                // ÉsÉNÉZÉãç¿ïWÇåvéZ
+                // „Éî„ÇØ„Çª„É´Â∫ßÊ®ô„ÇíË®àÁÆó
                 Vector2Int pixelOffset = new Vector2Int(x, y);
                 Vector2Int pixel = pixelPos + pixelOffset;
 
@@ -197,7 +217,7 @@ public class PlayerController : MonoBehaviour
         Vector2 textureSize = new Vector2(groundSpriteRenderer.sprite.texture.width, groundSpriteRenderer.sprite.texture.height);
         float pixelPerUnit = groundSpriteRenderer.sprite.pixelsPerUnit;
 
-        // ÉèÅ[ÉãÉhç¿ïWÇÉXÉvÉâÉCÉgÇÃíÜêSÇå¥ì_Ç∆ÇµÇΩëäëŒç¿ïWÇ…ïœä∑
+        // „ÉØ„Éº„É´„ÉâÂ∫ßÊ®ô„Çí„Çπ„Éó„É©„Ç§„Éà„ÅÆ‰∏≠ÂøÉ„ÇíÂéüÁÇπ„Å®„Åó„ÅüÁõ∏ÂØæÂ∫ßÊ®ô„Å´Â§âÊèõ
         Vector2 localPos = worldPos - (Vector2)groundSpriteRenderer.transform.position;
         int texturX = (int)(textureSize.x / 2 + localPos.x * pixelPerUnit);
         int textureY = (int)(textureSize.y / 2 + localPos.y * pixelPerUnit);
