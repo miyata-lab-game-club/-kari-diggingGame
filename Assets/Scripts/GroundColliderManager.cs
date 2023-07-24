@@ -24,8 +24,6 @@ public class GroundColliderManager : MonoBehaviour
     public void UpdateGroundCollider()
     {
         middleGroundTexture = (Texture2D)middleGroundSpriteRenderer.sprite.texture;
-        int width = middleGroundTexture.width;
-        int height = middleGroundTexture.height;
         Color[] pixels = middleGroundTexture.GetPixels();
         // コライダーの二番目以降があったら破棄する
         if (groundCollider.pathCount > 1)
@@ -66,6 +64,7 @@ public class GroundColliderManager : MonoBehaviour
         Debug.Log("実行");
         int width = middleGroundTexture.width;
         int height = middleGroundTexture.height;
+        borders = new List<Vector2Int>();
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)

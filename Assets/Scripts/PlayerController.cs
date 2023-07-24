@@ -64,21 +64,18 @@ public class PlayerController : MonoBehaviour
                 transform.position += new Vector3(0, 1, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
-                groundColliderManager.UpdateGroundCollider();
             }
             else if (Input.GetKey(KeyCode.RightArrow))
             {
                 transform.position += new Vector3(1, 0, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
-                groundColliderManager.UpdateGroundCollider();
             }
             else if (Input.GetKey(KeyCode.LeftArrow))
             {
                 transform.position += new Vector3(-1, 0, 0) * Time.deltaTime;
                 DigHole(middleGroundTexture, player.transform.position, 20);
                 DigHole(groundTexture, player.transform.position, 30);
-                groundColliderManager.UpdateGroundCollider();
             }
 
             if (Input.GetKeyDown(KeyCode.Q))
