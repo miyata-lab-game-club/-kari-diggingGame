@@ -1,5 +1,7 @@
 # diggingGame
 穴掘りRPGをつくる
+# Notion企画書：
+https://www.notion.so/RPG-b69dfb6e6a974543af4b05076eceaf71
 # システム
 ## 穴掘りパート
 ### 全体の概要
