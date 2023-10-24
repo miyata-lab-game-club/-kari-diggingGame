@@ -1,3 +1,4 @@
+# 仮モック的なもの
 # diggingGame
 穴掘りRPGをつくる
 # Notion企画書：
